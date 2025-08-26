@@ -1,13 +1,58 @@
-const express = require = require("express")
+const express = require("express")
+const swaggerUi = require("swagger-ui-express")
+const swaggerJsdoc = require("swagger-jsdoc")
+const swaggerOpitions = require("./extend/swagger")
+
+
 const app = express()
 const port = 3000
 
+const specs = swaggerJsdoc(swaggerOpitions)
+
 app.use(express.json())
+
+/**
+ * @swagger
+ * components:
+ *  schemas:
+ *      Aluno:
+ *          type: object
+ *          required:
+ *              - id
+ *              - nome
+ *          properties:
+ *              id:
+ *                  type: integer
+ *                  description: Identificador do aluno
+ *              nome:
+ *                  type: string
+ *                  description: Nome do aluno
+ *          example: 
+ *              id: 1
+ *              nome: fulano
+ */
 
 let alunos = [
 
     { id: 1, nome: "João" }
 ]
+
+/**
+ * @swagger
+ * /aluno:
+ *  get:
+ *      summary: Retorna todos os alunos cadastrados 
+ *      tags: [Alunos]
+ *      responses: 
+ *          200:
+ *              description: Lista de Alunos
+ *              Content: 
+ *                  application/json:
+ *                      schema: 
+ *                          type: array
+ *                          items:
+ *                              $ref: '#/components/schemas/Aluno'
+ */
 
 app.get('/aluno', (req, res) => {
     res.json(alunos)
@@ -38,6 +83,7 @@ app.put('/aluno/:id', (req, res) => {
 
 })
 
+app.use("/api-doc", swaggerUi.serve, swaggerUi.setup(specs))
 
 app.listen(port, () => {
     console.log("Servidor de API funcionando")
